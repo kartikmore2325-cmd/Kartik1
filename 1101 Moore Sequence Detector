@@ -1,0 +1,42 @@
+Verilog Code
+module seq1101(clk, reset, x, z);
+input clk, reset, x;
+output reg z;
+reg [2:0] state;
+parameter S0=0,S1=1,S2=2,S3=3,S4=4;
+always @(posedge clk or posedge reset)
+if(reset)
+state<=S0;
+else
+case(state)
+S0: state <= x ? S1 : S0;
+S1: state <= x ? S2 : S0;
+S2: state <= x ? S2 : S3;
+S3: state <= x ? S4 : S0;
+S4: state <= x ? S2 : S0;
+endcase
+always @(state)
+if(state==S4)z=1;
+else
+z=0;
+endmodule
+
+
+Testbench
+module tb_seq;
+reg clk, reset, x;
+wire z;
+seq1101 uut(clk,reset,x,z);
+always #5 clk = ~clk;
+initial
+begin
+clk=0;
+reset=1;
+#10 reset=0;
+x=1; #10
+x=1; #10
+x=0; #10
+x=1; #10
+#50 $finish;
+end
+endmodule
