@@ -1,0 +1,42 @@
+module ALU4bit(
+ input [3:0] A, B, // (bits 3 down to 0)
+ input [2:0] opcode,
+ output reg [3:0] OUT
+);
+always @(*) begin // starts an always block that reacts to any change in inputs., whenever A, 
+B, or opcode changes
+ case(opcode) // Chooses an operation based on the value of opcode
+ 3'b000: OUT = A + B; // Addition
+ 3'b001: OUT = A - B; // Subtraction
+ 3'b010: OUT = A & B; // AND
+ 3'b011: OUT = A | B; // OR
+ 3'b100: OUT = A ^ B; // XOR
+ 3'b101: OUT = ~(A | B); // NOR
+ 3'b110: OUT = ~(A & B); // NAND
+ 3'b111: OUT = ~(A ^ B); // XNOR
+ default: OUT = 4'b0000;
+ endcase
+end
+endmodule
+
+
+
+Test Bench
+module ALU4bit_tb();
+reg [3:0] A, B; // Declares test bench registers for inputs A and B.
+reg [2:0] opcode; // Declares a 3-bit register for opcode control.
+wire [3:0] OUT; // Declares a wire to observe the ALU output
+ALU4bit uut (A, B, opcode, OUT);
+initial begin
+ A = 4'b0101; B = 4'b0011;
+ opcode = 3'b000; #10; // Add
+ opcode = 3'b001; #10; // Sub
+ opcode = 3'b010; #10; // AND
+ opcode = 3'b011; #10; // OR
+ opcode = 3'b100; #10; // XOR
+ opcode = 3'b101; #10; // NOR
+ opcode = 3'b110; #10; // NAND
+ opcode = 3'b111; #10; // XNOR
+ $stop;
+end
+endmodule
