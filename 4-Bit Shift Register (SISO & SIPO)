@@ -1,0 +1,44 @@
+module siso_shift(
+ input clk,
+ input reset,input sin,
+ output sout
+);
+reg [3:0] q;
+always @(posedge clk or posedge reset)
+begin
+ if(reset)
+ q <= 4'b0000;
+ else
+ q <= {q[2:0], sin}; // shift left
+end
+assign sout = q[3];
+endmodule
+
+
+
+
+Testbench
+module tb_siso;
+reg clk;
+reg reset;
+reg sin;
+wire sout;
+siso_shift uut(
+ .clk(clk),
+ .reset(reset),
+ .sin(sin),
+ .sout(sout)
+);
+always #5 clk = ~clk;
+initialbegin
+ clk = 0;
+ reset = 1;
+ sin = 0;
+ #10 reset = 0;
+ sin = 1; #10;
+ sin = 0; #10;
+ sin = 1; #10;
+ sin = 1; #10;
+ #40 $finish;
+end
+endmodule
