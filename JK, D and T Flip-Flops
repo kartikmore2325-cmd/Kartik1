@@ -1,0 +1,35 @@
+JK Flip-Flop
+module jk_ff(input clk, j, k, output reg q);
+always @(posedge clk)
+begin
+case({j,k})
+2'b00: q <= q;
+2'b01: q <= 0;
+2'b10: q <= 1;
+2'b11: q <= ~q;
+endcaseend
+endmodule
+
+
+Test bench
+module tb_flipflop;
+reg clk;
+reg j,k,d,t;
+wire q1,q2,q3;
+jk_ff jk(clk,j,k,q1);
+d_ff dff(clk,d,q2);
+t_ff tff(clk,t,q3);
+always #5 clk = ~clk;
+initialbegin
+clk = 0;
+j=0;k=0; d=0; t=0;
+#10 j=1;k=0;
+#10 j=0;k=1;
+#10 j=1;k=1;
+#10 d=1;
+#10 d=0;
+#10 t=1;
+#20 t=0;
+#50 $finish;
+end
+endmodule
