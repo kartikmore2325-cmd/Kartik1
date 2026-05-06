@@ -1,0 +1,39 @@
+module BCD_adder(A,B,Cin,Sum,Cout);
+input [3:0] A,B;
+input Cin;
+
+output reg [3:0] Sum;
+output reg Cout;
+reg [4:0] temp;
+always @(*)
+begin
+temp = A + B + Cin;
+if(temp > 9)
+begin
+temp = temp + 6;
+Cout = 1;
+end
+else
+Cout = 0;
+Sum = temp[3:0];
+end
+endmodule
+
+
+Testbench
+module tb_BCD;
+reg [3:0] A,B;
+reg Cin;
+wire [3:0] Sum;
+wire Cout;
+BCD_adder uut(A,B,Cin,Sum,Cout);
+initial
+begin
+$monitor("A=%b B=%b Cin=%b Sum=%b Cout=%b",A,B,Cin,Sum,Cout);
+A=4'b0101; B=4'b0011; Cin=0; #10
+A=4'b0110; B=4'b0101; Cin=0; #10
+A=4'b1001; B=4'b0001; Cin=0; #10
+A=4'b1001; B=4'b1001; Cin=0; #10
+$finish;
+end
+endmodule
