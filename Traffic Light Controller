@@ -1,0 +1,84 @@
+module traffic_light_controller(
+ input clk,
+ input reset,
+ output reg red,
+ output reg yellow,
+ output reg green
+);
+// State encoding
+parameter S0 = 2'b00; // Green
+parameter S1 = 2'b01; // Yellow
+parameter S2 = 2'b10; // Red
+reg [1:0] state;
+reg [3:0] count;
+// State transition
+always @(posedge clk or posedge reset) begin
+ if (reset) begin
+ state <= S0;
+ count <= 0;
+ end else begin
+ case (state)
+ S0: if (count == 5) begin
+ state <= S1;
+ count <= 0;end else count <= count + 1;
+ S1: if (count == 2) begin
+ state <= S2;
+ count <= 0;
+ end else count <= count + 1;
+ S2: if (count == 5) begin
+ state <= S0;
+ count <= 0;
+ end else count <= count + 1;
+ default: state <= S0;
+ endcase
+ end
+end
+// Output logic
+always @(*) begin
+ case(state)
+ S0: begin
+ green = 1;
+ yellow = 0;
+ red = 0;
+ end
+ S1: begin
+ green = 0;yellow = 1;
+ red = 0;
+ end
+ S2: begin
+ green = 0;
+ yellow = 0;
+ red = 1;
+ end
+ endcase
+end
+endmodule
+
+
+
+
+Testbench
+module tb_traffic;
+reg clk;
+reg reset;
+wire red, yellow, green;
+// Instantiate module
+traffic_light_controller uut (
+ .clk(clk),
+ .reset(reset),
+ .red(red),
+ .yellow(yellow),
+ .green(green)
+);
+// Clock generation
+always #5 clk = ~clk;
+initial begin// Initialize
+ clk = 0;
+ reset = 1;
+ // Apply reset
+ #10 reset = 0;
+ // Run simulation
+ #200;
+ $stop;
+end
+endmodule
